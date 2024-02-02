@@ -14,29 +14,27 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// Endpoint yhteenlaskulle
+app.MapGet("/add", (double num1, double num2) => Results.Ok(new { Result = num1 + num2 }))
+    .WithName("Add")
+    .WithOpenApi();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+// Endpoint vähennyslaskulle
+app.MapGet("/subtract", (double num1, double num2) => Results.Ok(new { Result = num1 - num2 }))
+    .WithName("Subtract")
+    .WithOpenApi();
+
+// Endpoint kertolaskulle
+app.MapGet("/multiply", (double num1, double num2) => Results.Ok(new { Result = num1 * num2 }))
+    .WithName("Multiply")
+    .WithOpenApi();
+
+// Endpoint jakolaskulle
+app.MapGet("/divide", (double num1, double num2) => {
+    if (num2 == 0) return Results.BadRequest("Nollalla jakaminen ei ole sallittua.");
+    return Results.Ok(new { Result = num1 / num2 });
 })
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    .WithName("Divide")
+    .WithOpenApi();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
