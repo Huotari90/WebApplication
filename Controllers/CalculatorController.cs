@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Calculator // Muuta tämä vastaamaan omaa nimiavaruuttasi
+namespace Calculator
 {
     [ApiController]
     [Route("[controller]")]
