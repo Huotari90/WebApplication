@@ -1,11 +1,22 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Correctly configure CORS before building the app
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policyBuilder => {
+        policyBuilder.AllowAnyOrigin()
+                     .AllowAnyMethod()
+                     .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
+
+// Use CORS with the configured policy
+app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -13,6 +24,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// IMPORTANT: UseStaticFiles must be called before the endpoints are defined
+app.UseStaticFiles(); // Enables serving static files from the wwwroot folder
+
+// Optionally, to make index.html the default file you can also call UseDefaultFiles
+// UseDefaultFiles must be called before UseStaticFiles
+app.UseDefaultFiles(new DefaultFilesOptions { DefaultFileNames = new List<string> { "index.html" } });
+
+// Continue with the configuration of your HTTP request pipeline as before
 
 // Endpoint yhteenlaskulle
 app.MapGet("/add", (double num1, double num2) => Results.Ok(new { Result = num1 + num2 }))
@@ -38,3 +58,4 @@ app.MapGet("/divide", (double num1, double num2) => {
     .WithOpenApi();
 
 app.Run();
+
