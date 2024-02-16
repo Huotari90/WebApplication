@@ -14,7 +14,7 @@ builder.Services.AddCors(options => {
 });
 
 var app = builder.Build();
-
+//test
 // Use CORS with the configured policy
 app.UseCors("AllowAll");
 
