@@ -1,3 +1,2 @@
 # WebApplication
-![Deploy badge](
-https://github.com/Huotari90/WebApplication/actions/workflows/aspnetcore-cicd.yml.yml/badge.svg)
+![badge](https://github.com/Huotari90/WebApplication/actions/workflows/aspnetcore-cicd.yml/badge.svg)
