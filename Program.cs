@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Correctly configure CORS before building the app
+// Correctly configure CORS before building the app/
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policyBuilder => {
         policyBuilder.AllowAnyOrigin()
@@ -26,11 +26,10 @@ if (app.Environment.IsDevelopment())
 }
 
 // IMPORTANT: UseStaticFiles must be called before the endpoints are defined
+app.UseDefaultFiles(new DefaultFilesOptions { DefaultFileNames = new List<string> { "index.html" } });
 app.UseStaticFiles(); // Enables serving static files from the wwwroot folder
 
-// Optionally, to make index.html the default file you can also call UseDefaultFiles
-// UseDefaultFiles must be called before UseStaticFiles
-app.UseDefaultFiles(new DefaultFilesOptions { DefaultFileNames = new List<string> { "index.html" } });
+
 
 // Continue with the configuration of your HTTP request pipeline as before
 
