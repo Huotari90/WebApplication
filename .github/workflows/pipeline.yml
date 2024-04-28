@@ -1,0 +1,39 @@
+name: .NET Core Deployment to Azure
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push events to the main branch.
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # The type of runner that the job will run on.
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3  # Checks-out your repository under $GITHUB_WORKSPACE.
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'  # Define the .NET Core version.
+
+    - name: Install Dependencies
+      run: dotnet restore  # Restores the dependencies and tools of a project.
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal  # Runs the tests.
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore  # Builds the project.
+
+    - name: Publish
+      run: dotnet publish --configuration Release --output ./publish  # Publishes the application to a folder.
+
+    - name: Deploy to Azure
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'WebApplicationWinukka'  # Replace with your app name.
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # Define your publish profile secret.
+        package: './publish'  # Points to the folder where your app is published.
+
