@@ -3,7 +3,7 @@ name: .NET Core Deployment to Azure
 on:
   push:
     branches:
-      - main  # Trigger the workflow on push events to the main branch.
+      - master  # Trigger the workflow on push events to the main branch.
 
 jobs:
   build-and-deploy:
