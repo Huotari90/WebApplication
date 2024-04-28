@@ -1,66 +1,41 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - WebApplicationWinukka
+name: Azure CD Pipeline
 
 on:
   push:
     branches:
-      - master
-  workflow_dispatch:
+      - master  # Runs on pushes to the main branch
+  pull_request:
+    branches:
+      - master  # Runs on pull requests to the main branch
 
 jobs:
-  build:
-    runs-on: windows-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Specifies the runner environment
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v3  
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '8.0'
-          include-prerelease: true
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'  
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+    - name: Install Dependencies
+      run: dotnet restore
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+    - name: Run Tests
+      run: dotnet test
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
+    - name: Deploy to Azure
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'WebApplicationWinukka'  
+        slot-name: 'production'  
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}  # Set in your repo secrets
+        package: '.WebApplication/bin/Release/net8.0'  # Path to your web app project or web deploy package
 
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: .net-app
-      
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_583F6863397C4868833A6DCD11E3BBD9 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_04DEE02FAC5E4CBB95517DB0F6C13AC3 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_35B7244FD82D4B4EADFA79E937CAE7BD }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'WebApplicationWinukka'
-          slot-name: 'Production'
-          package: .
-          
